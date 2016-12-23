@@ -1,4 +1,4 @@
-# Expert-Driven Knowledge Acquisition: Intelligent Knowledge Authoring Tool (I-KAT)
+# Lifelog Mapping and Representation (LLMR)
 <!-- make your own badges from here: http://shields.io/ -->
 [![Version](https://img.shields.io/badge/mining%20minds-version%202.5-green.svg)](http://www.miningminds.re.kr/english/)
 [![License](https://img.shields.io/badge/Apache%20License%20-Version%202.0-yellowgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
@@ -21,7 +21,7 @@
 	
 - [3. Features](#3-features)
    
-- [4. Contributions](#4-contributions)
+- [4. Contribution](#4-contribution)
    
 - [5. Author](#5-author)
 
@@ -32,63 +32,65 @@
 
 # 1. Introduction
 
-Effective and smart recommendation systems depend on the up-to-date and validated knowledge base. As we know that in every field of life, 
-knowledge plays a vital role and all intelligent decisions are made based on knowledge. So knowledge should be accurate and updated. 
-For producing and maintaining accurate knowledge, various machine learning and evolutionary techniques are used to update and maintain the 
-knowledge base. The experts’ interaction with knowledge base is mandatory to evolve the knowledge base with validated knowledge.
-
-The Expert Driven- knowledge acquisition tool creates and maintains the knowledge using Wellness Concepts Model and 
-Intelli-sense functionalities to facilitate the service curation layer for better quality of service. In Expert-driven approach, domain expert 
-creates and maintains the knowledge through authoring environment with minimum intervention of knowledge engineers. For rule authoring, Knowledge 
-Acquisition Tool is built that acquires knowledge from domain expert. The proposed system provides situation based indexing in rules of knowledge 
-base. The situations in rules allow the Life-log monitor to observe the defined situations for users, whenever the alarming situations occurred 
-then the system provides the right recommendation at right time.
+The data curation layer of Mining Minds platform collects data from variety of sources such as multi-model sensors, social networking sites,
+ wearables, and audio/video streams to acquire knowledge and generate personalized services for the end user. Data from multimodal sensors are
+ curated to extract low level context information such as user activities (walking, jogging, running, sleeping etc.) and high level context
+ information such as behavior modeling and context recognition. Mining Minds generates recommendations based on the user’s daily activities,
+ sedentary behavior, profile information, and user preferences and many other factors. Therefore, according to this flow of data, different 
+ nature of data is needed to persist in intermediate storage. This intermediate storage should give access to the different layers of the 
+ Mining Minds. The output of all the layers should persist in intermediate database as life-log. Therefore, a sophisticated, flexible and 
+ scalable data representation is needed.
+ Life-log mapping & representation is emerging and integral part of a system after the data acquisition phase.  After data acquisition the 
+ data passes through different phases of the data curation process and information curation process to the life-log mapping and representation 
+ module to validate, verify and persist the recognized life activities. Based on the recognized activities and high level context of user the 
+ provides recommendations to the end user. Therefore, the Life-log mapping and representation provides a flexible, scalable and relational 
+ representation to persist this heterogeneous data from diverse resources in a uniform storage.
  
 ## 1.1 Core Implementation
 
-There is main project developed according to Spring MVC pattern as a maven project.
-- Controllers:<br>
-	The controllers provide bridge between the data models and views of the project. Currently we are handling following three controllers to handle 
-	knowledge base (Rules), users of the knowledge base, and wellness concepts model. It contains under the package of "org.uclab.mm.kcl.edkat.controller".
-	- Rule Controller:
-		It plays an important role in handling the knowledge base. It is responsible for persistence and fetching the Rules, Conditions of the Rules,
-		Conclusions of the Rules, and Situations in a Rule. It is represented as "RulesController".
-	- User Controller:
-		This controller is responsible to handle the users (domain experts), which are using the knowledge authoring tool. It provides bridge between the
-		views and user's model. It is implemented as "UserController".
-	- Wellness Model Controller:
-		We provided the intelli-sense to the domain experts on the rule editor to create rules using some controlled vocabulary. Wellness Model Concepts are
-		using in creation of rules. Therefore, "WellnessModelController" handles the communication between views and wellness concepts model.
-- Models:<br>
-	Models is responsible for persisting and fetching the knowledge rules with corresponding conditions, conclusions, and situations from knowledge bases. The
-	model contains three different packages as datamodel, dao (data access objects), and services.
+There are two main separate projects 
+- Data Curation Restful Services:
+	This module provides Restful webservices with different end proints, depends on the nature of data. In code directory, it's name is 
+	MMDataCurationRestfulService. It provides end points based on the nature of data using in different layers of Mining Minds platform.
+	- Data Curation Resource:
+		It provides representation and persistence for user’s related data like physiological, disabilities, risk factors, facilitities, user's 
+		schuduals. In code directory, it is presented as Restful Service facade, "DataCurationResource".
+	- Information Curation Resource:
+		It provides representation and persistence for user's low level and high level context data like user's recognized activity, location, emotion, 
+		and corresponding high level context. It is presented as Restful Service facade, "InformationCurationResource".
+	- Service Curation Resource:
+		It provides representation and persistence for user's recommendations, goals, situations, activity plans, and facts based on the  corresponding
+		high level context and behavior of the user. It is presented as Restful Service facade, "ServiceCurationResource".
+	- Supporting Layer Resource:
+		It provides representation, persistence but mainly focuses on analytics and visualization of the persisted all information in other layers. For example, 
+		analytics and visualization for performed activities, emotions, locations, high level context. It is presented as Restful Service facade, "SupportingLayerResource".
+- Intermediate Database Library:
+	This library provides the implementation of object relation model (ORM) to persist heterogeneous data curated in different layers of Mining Minds platform. This library is 
+	structured based on data model and adapters with corresponding layer.
 	- Data Models:
-		The data models are represented in different entity classes based on Rule, Conclusion, Condition, Situation, User, Wellness Concepts Model, and Wellness
-		Concepts Relationships. These data models are put under the package "org.uclab.mm.kcl.edkat.datamodel".
-	- DAO (Data Access Object):
-		DAO handles the persistence and retrival of all knowledge artifacts such as rules, conditions, conclusions, situations, wellness concepts, and users. According to
-		the standard structure of data access layer, DAO contain one interface and one correspinding implementation class for each above mentioned knowledge artifacts. For
-		example, RuleDAO interface and RuleDAOImpl is the correspinding implementation class to handle the rules of knowledge base. Similarly, ConditionDAO and ConditionDAOImpl
-		for conditions, ConclusionDAO and ConclusionDAO for conclusions, SituationDAO and SituationDAOImpl for situations and so on. All these data access object and handlers 
-		are implemented according to Hibernate framework.
-	- Services:
-		These are local services to handle the communication between controllers and DAO objects and its implementation. The services also contains one interface and one 
-		correspinding implementation class. For example, RuleService is interface and RuleServiceImpl is its implementation. Similarly, ConditionService and ConditionServiceImpl
-		is handling conditions of a rule, ConclusionService and ConclusionServiceImpl is for conclusions of a rule and so on.
-- Views:<br>
-	According to spring mvc pattern, views are responsible to view the user interfaces by rendering the correspinding html. The rendered html is merged with data retrived by controllers
-	using particular DAO and services. In this project, we have following three view.
-	- Login View:
-		The login view is responsible to authenticate the authorized users (domain expert), who have the rights to access, create, and modify the rules in the knowledge base.
-	- Dasboard View:
-		We have implemented the dashboard view for viewing the existing rules in the knowledge base at a single glance. The dashboard show the meta information of the rules like
-		rule title, specialist name, institution, rule created date, and two button for Editing and deleting the existing rules. The domain expert can also navigate to rule editor
-		by clicking "Add new rule" button.
-	- Rule Editor View:
-		The rule editor view is the main editor for creating new rule and updating the existing rules. This editor provides saparate slot for meta information of the rule, saparate
-		slot for adding multiple conditions of a particular rule, saparate slot for multiple conclusions of the rule. The rule editor also facilitates the domain experts to select
-		required conditional facts as situations. The selected situations are using by life-log monitor to find the abnormal situations of the user.
-			
+		The root of data model package "org.uclab.mm.datamodel" contains the general classes, which are using in all layers to communicate with database. The abriviations dc 
+		(Data Cruration), ic (Information Curation), sc (Service Curation), and sl (Supporting Layer) is appending with root of data model, and represent the object model of 
+		the corresponding layer. (e.g. org.uclab.mm.datamodel.dc, org.uclab.mm.datamodel.ic, org.uclab.mm.datamodel.sc, and org.uclab.mm.datamodel.sl)
+	- Data Adapters:
+		After the object data model representation, the next level is represented by data adapters. Each data model has its own adapter to persist and retrieve the data into
+		database, it contains the fundamental CRUD operations for each entity. The dataadapter packages is extended after the abriviations of each layer, like 
+		"org.uclab.mm.datamodel.dc.dataadapter".
+
+Followings are the services which are provided to the client to access and persist data
+
+- DataCurationResources: Accept and return the json of the correspinding data entity  
+	 Physiological Factors, User Address, User Disabilities, User Facilities, User Risk Factors, Users, User Schedule
+- InformationCurationResource: Accept and return the json of the correspinding data entity  
+	 Device, Food Log, User Accelerometer Data, User Detected Location, User Device, User GPS Data, User Prefered Location
+	 User Recognized Activity, User Recognized Activity Log, User Recognized Emotion, user recognition high level context.
+- ServiceCurationResource: Accept and return the json of the correspinding data entity  
+	 Achievments, Activity Plan, Activity Recommendation, Facts, Profile Data, Recommendation, Recommendation Exceptions,
+	 Recommendation Explanation, Situation, User Goal, User Prefered Activities, User Rewards.
+- SupportingLayerResource: Accept and return the json of the correspinding data entity  
+	 Active Session, Activity Feedback, Expert Review, Facts Feedback, Recommendation Feedback, User Accelerometer Data Visualization,
+	 User GPS Data Visualization.
+- The detail of each end points with complete URLs and input json are given in a separate file (mentioned file).
+
 # 2. Getting Started
 
 This consist of the following sub-headings. 
@@ -107,14 +109,14 @@ Example:
 	*	Microsoft SQL Sever 2012
 	*	Install the database and set its password and login id
 	*	Where Server name is (local)
-	*	Authentication is set to “SQL Server Authentication”
-	*	Create a database with Name “MMIKATDB_V2”
-	*	Select the database “MMIKATDB_V2” and right click and select new query
-	*	Download the “MiningMindsIKATSchema.sql” and "MiningMindsIKATData.sql"
-	*	Open the “MiningMindsIKATSchema.sql" file.
+	*	Authentication isset to “SQL Server Authentication”
+	*	Create a database with Name “DBMiningMindsV1_5”
+	*	Select the database “DBMiningMindsV1_5” and right click and select new query
+	*	Download the “MiningMindsLLMRSchema.sql” and "MiningMindsLLMRData.sql"
+	*	Open the “MiningMindsLLMRSchema.sql" file.
 	*	Copy all the queries and paste into  new query window.
 	*	Then Execute the query, it will create database with whole schema.
-	*	Open the "MiningMindsIKATData.sql" file.
+	*	Open the MiningMindsLLMRData.sql" file.
 	*	Copy all the queries and paste into  new query window.
 	*	Then Execute the query, it will import all the data of Mining Minds.
 	*	Database is ready for the working
@@ -132,7 +134,7 @@ Example:
 	*	Update PATH variable, append Maven bin folder, so that you can run the Maven’s command everywhere.
 	*	Verification by running  mvn –version in the command prompt.
 -Apache Tomcat Installation
-	*	Goto http://tomcat.apache.org ⇒ Downloads ⇒ Tomcat 8.0 ⇒ "8.0.{xx}" (where {xx} is the latest upgrade number) ⇒ Binary Distributions ⇒ Core ⇒ "ZIP" package (e.g., "apache-tomcat-8.0.{xx}.zip", about 8 MB).
+	*	Goto http://tomcat.apache.org ? Downloads ? Tomcat 8.0 ? "8.0.{xx}" (where {xx} is the latest upgrade number) ? Binary Distributions ? Core ? "ZIP" package (e.g., "apache-tomcat-8.0.{xx}.zip", about 8 MB).
 	*	Create your project directory, say "drive:\myProject" or "drive:\myProject". UNZIP the downloaded file into your project directory. Tomcat will be unzipped into directory "drive:\myProject\apache-tomcat-8.0.{xx}".
 	*	For ease of use, we shall shorten and rename this directory to "drive:\myProject\tomcat".
 -Build Project
@@ -141,51 +143,43 @@ Example:
 	*	Change the directory to your project directory and folder
 	*	Run “mvn clear install” command
 	*	After succesful project build  
-	*	Go to Project folder and access the target folder to copy AuthoringEnvironment.war file
+	*	Go to Project folder and access the target folder to copy MMDataCurationRestfulService.war file
 	*	Go to apache-tomcat\webapps folder and paste war file there.
 	*	Go to apache-tomcat\bin and start the tomcat server by click on startup.bat file. 
 	*	Open browser to test apache-tomcat
-	*	Give url : http://localhost:8081/AuthoringEnvironment/login
-	*	It will render the login view to authenticate the domain expert as a user.
-	*	In login id write "john" and password "test123" and click login button
-	*	The dashboard view will appear with the Rules List of existing rules in the knowledge base.
-	*	If you want to add new rule then click "Add new rule" button.
-	*	It will render the rule editor view in adding mode.
-	*	First put the meta information about the rule like rule title, Author's name, Rule Type, Institution, Rule created date and others.
-	*	Add required conditions (can be multiple) by clicking "Add New" button in Rule Conditions slot.
-	*	Select the check box under the "Is it situation" column, if that particular conditional fact is situation.
-	*	Similarly, add single or multiple conclusions by clicking "Add new" button in the Rule Conclusion slot.
-	*	If you want to write some other recommendation then use the Recommendation box.
-	*	The selected situation and written rule will be shown in Selected Situation slot and Rule View slot, respectively.
-	*	Finally, click the Save Rule button to persist the new rule into the knowledge base.
-	*	The same steps can follow to edit the existing rules after clicking the Edit button on dashboard to the correspinding rule.
+	*	Give url : http://localhost:8080/MMDataCurationRestfulService/webresources/DataCuration/User/12
+	*	It will fetch the User data of Mining Minds platform. It means the services are ready for persisting and retriving using differet provided methods
+	*	DCL provides 23 different CRUD functions
+	*	ICL provides 28 different CRUD functions
+	*	SCL provides 43 different CRUD functions
+	*	SL provides 16 different CRUD functions
+	*	The detail URLs for each CRUD operation with input JSON are given in above mentioned document.
+	*	 The services are available to return data in JSON format. That can be used further.
 
 
 ## 2.3 Usage
 
-Once environment has been setup, the user (domain expert) can use this user friendly authoring environment to manage the knowledge base by creating new rules and editing the existing rules. User can 
-modify and customize the code according to their requirements. But users should follow the same spring mvc pattern and hibernate framework for updation the code.
-*	Add new required table or update the existing table in database "MMIKATDB_V2".
-*	Add new or update existing controller under the package "org.uclab.mm.kcl.edkat.controller"
-*	Add new or update existing data model under the package "org.uclab.mm.kcl.edkat.datamodel"
-*	Add new or update existing DAO object with interface and implementation under the package "org.uclab.mm.kcl.edkat.dao"
-*	Add new or update existing service with interface and implementation under the package "org.uclab.mm.kcl.edkat.service"
-*	Add the required objects as bean in servlet-context.xml file under foler hierarchy src/main/webapp/WEB-INF/spring/appServlet according to followed pattern.
-*	Add new or update the existing views according to the requirements under the folder hierarchy src/main/webapp/WEB-INF/views according to followed pattern.
+Once environment has been setup the user can use the Life-log mapping and representation service to persist and fetch different data. User can define own methods to persist the required and customized data into the 
+lifelog. The users can use the methods without modification and customization. When user want to customize and add more functionality into it then follow these steps in projects "MMDataCurationRestfulService" and 
+"IntermediateDatabaseLibrary" source code.
+*	Add new required table in database "DBMiningMindsV1_5".
+*	Add Entity class for new added table in corresponding datamodel package e.g. "org.uclab.mm.datamodel.dc".
+*	Add adapter class for new added table with all required CRUD operations in correspinding adapter package e.g. "org.uclab.mm.datamodel.dc.adapter"
+*	Add the abstract methods of above CRUD operations in abstract class "AbstractDataBridge".
+*	Add implementation of the abstract methods in "DatabaseStorage" class.
+*	call these new created methods by interface in correspinding resource of Restful service "MMDataCurationRestfulService".
 
 # 3. Features
 
 Write the main features 
 
-- Providing user-friendly environment to expert for transformation of their experiences into knowledge base. 
-- Providing situation based indexing for knowledge base in order to classify diverse rules and enhance performance of reasoning.
-- Providing transformation mechanism to represent the knowledge rules into multiple format.
+- Heterogeneous data Processing Streams 1: Providing extensible and understandable structured format to variety of data. 
+- Fine-grained Information access 2: Processable and procedural format to all layers and modules of MM Platform.
+- Extensible Data Model 3: Integratable new models based on the different input data sources.
 
-# 4. Contributions
+# 4. Contribution
 
--	Provide user-friendly Rule Editor to domain experts to maintain the knowledge base. 
--	Index based rules (Situation enabled) generation and sharing for different services.
--	In future, we will provide a uniform guidline template model.
+In this implementation, we are contributing a flexible and scalable data model to represent heterogeneous data and life-log information to find users behavior and provide recommendations based on life-log information. 
 
 
 # 5. Author
@@ -207,3 +201,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 <br>
+ 
+
+
