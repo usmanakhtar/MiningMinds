@@ -3,8 +3,8 @@
 <!-- make your own badges from here: http://shields.io/ -->
 [![Version](https://img.shields.io/badge/MM__SL__UI/UX-V2.5-ff69b4.svg)](http://www.miningminds.re.kr/english/)
 ![License](https://img.shields.io/badge/Apache%20License%20-Version%202.0-yellowgreen.svg)
+[![JavaDoc-Version](https://img.shields.io/badge/JavaDoc-Version%202.5-green.svg)](https://usmanakhtar.github.io/MiningMinds/SL/uiux-authoring-tool/JavaDoc/index.html)
 
---------------------------
 <!-- Update the list and the main body. -->
 
 This document describes how to get started using the UI/UX Authoring tool Tracking SDK for Android. UI/UX Authoring tool is open source UX engine that gives you valuable insights into your application user, and much more, so you can optimize your strategy and experience of your application user.
